@@ -4,10 +4,10 @@ import {
   ConstructorElement,
   CurrencyIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { Preloader, OrderDetailsUI } from '@ui';
+import { OrderDetailsUI, Preloader } from '@ui';
 
-import type { BurgerConstructorUIProps } from './type';
 import type { TConstructorIngredient } from '@utils-types';
+import type { BurgerConstructorUIProps } from './type';
 
 import styles from './burger-constructor.module.css';
 
@@ -19,9 +19,9 @@ export const BurgerConstructorUI = ({
   onOrderClick,
   closeOrderModal,
 }: BurgerConstructorUIProps): React.JSX.Element => (
-  <section className={styles.burger_constructor}>
+  <section className={styles.burger_constructor} data-testid="constructor">
     {constructorItems.bun ? (
-      <div className={`${styles.element} mb-4 mr-4`}>
+      <div className={`${styles.element} mb-4 mr-4`} data-testid="constructor-bun-1">
         <ConstructorElement
           type="top"
           isLocked
@@ -37,7 +37,7 @@ export const BurgerConstructorUI = ({
         Выберите булки
       </div>
     )}
-    <ul className={styles.elements}>
+    <ul className={styles.elements} data-testid="constructor-ingredients">
       {constructorItems.ingredients.length > 0 ? (
         constructorItems.ingredients.map(
           (item: TConstructorIngredient, index: number) => (
@@ -56,7 +56,7 @@ export const BurgerConstructorUI = ({
       )}
     </ul>
     {constructorItems.bun ? (
-      <div className={`${styles.element} mt-4 mr-4`}>
+      <div className={`${styles.element} mt-4 mr-4`} data-testid="constructor-bun-2">
         <ConstructorElement
           type="bottom"
           isLocked
@@ -72,7 +72,7 @@ export const BurgerConstructorUI = ({
         Выберите булки
       </div>
     )}
-    <div className={`${styles.total} mt-10 mr-4`}>
+    <div className={`${styles.total} mt-10 mr-4`} data-testid="order-summ">
       <div className={`${styles.cost} mr-10`}>
         <p className={`text ${styles.text} mr-2`}>{price}</p>
         <CurrencyIcon type="primary" />
@@ -81,7 +81,6 @@ export const BurgerConstructorUI = ({
         Оформить заказ
       </Button>
     </div>
-
     {orderRequest && (
       <Modal onClose={closeOrderModal} title={'Оформляем заказ...'}>
         <Preloader />

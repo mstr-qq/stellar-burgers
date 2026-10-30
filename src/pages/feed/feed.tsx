@@ -1,14 +1,20 @@
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
+import { useEffect } from 'react';
 
-import type { TOrder } from '@utils-types';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchFeeds, selectFeedsOrders } from '../../services/slices/feedsSlice';
 
 export const Feed = (): React.JSX.Element => {
-  // TODO: Взять переменную из стора
-  const orders: TOrder[] = [];
+  const dispatch = useDispatch();
+  const orders = useSelector(selectFeedsOrders);
+
+  useEffect(() => {
+    dispatch(fetchFeeds());
+  }, [dispatch]);
 
   const handleGetFeeds = (): void => {
-    // TODO: Запросить ленту заказов
+    dispatch(fetchFeeds());
   };
 
   if (!orders.length) {
