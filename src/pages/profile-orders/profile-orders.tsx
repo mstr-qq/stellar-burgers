@@ -2,12 +2,10 @@ import { ProfileOrdersUI } from '@ui-pages';
 import { useEffect } from 'react';
 
 import { useDispatch, useSelector } from '../../services/store';
-
-import { fetchUserOrders, selectUserOrders } from '../../services/slices/orderSlice';
+import { fetchUserOrders, selectUserOrders } from '../../services/slices/feedsSlice';
 
 export const ProfileOrders = (): React.JSX.Element => {
   const dispatch = useDispatch();
-
   const orders = useSelector(selectUserOrders);
 
   useEffect(() => {

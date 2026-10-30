@@ -1,12 +1,16 @@
 import { ProfileUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
-import { selectUserData, checkUserAuth } from '../../services/slices/userSlice';
-import { updateUserApi } from '../../utils/burger-api';
+import {
+  selectUserData,
+  selectUpdateUserError,
+  updateUser,
+} from '../../services/slices/userSlice';
 
 export const Profile = (): React.JSX.Element => {
   const dispatch = useDispatch();
   const user = useSelector(selectUserData);
+  const updateUserError = useSelector(selectUpdateUserError) ?? undefined;
 
   const [formValue, setFormValue] = useState({
     name: user?.name || '',
@@ -34,15 +38,13 @@ export const Profile = (): React.JSX.Element => {
     e.preventDefault();
     if (!isFormChanged) return;
 
-    updateUserApi({
-      name: formValue.name,
-      email: formValue.email,
-      password: formValue.password !== '••••••' ? formValue.password : undefined,
-    })
-      .then(() => {
-        dispatch(checkUserAuth());
+    dispatch(
+      updateUser({
+        name: formValue.name,
+        email: formValue.email,
+        password: formValue.password !== '••••••' ? formValue.password : undefined,
       })
-      .catch((err) => console.error('Ошибка обновления профиля:', err));
+    );
   };
 
   const handleCancel = (e: SyntheticEvent): void => {
@@ -67,6 +69,7 @@ export const Profile = (): React.JSX.Element => {
     <ProfileUI
       formValue={formValue}
       isFormChanged={isFormChanged}
+      updateUserError={updateUserError}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}

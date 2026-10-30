@@ -4,7 +4,7 @@ import {
   selectFeedsOrders,
   selectFeedsTotal,
   selectFeedsTotalToday,
-} from '../../services/slices/orderSlice';
+} from '../../services/slices/feedsSlice';
 
 import type { TFeedState, TOrder } from '@utils-types';
 
@@ -21,8 +21,8 @@ export const FeedInfo = (): React.JSX.Element => {
 
   const feed: TFeedState = {
     orders: ordersFromStore,
-    total: total,
-    totalToday: totalToday,
+    total,
+    totalToday,
     isLoading: false,
     error: null,
   };
@@ -31,6 +31,10 @@ export const FeedInfo = (): React.JSX.Element => {
   const pendingOrders = getOrders(ordersFromStore, 'pending');
 
   return (
-    <FeedInfoUI readyOrders={readyOrders} pendingOrders={pendingOrders} feed={feed} />
+    <FeedInfoUI
+      readyOrders={readyOrders}
+      pendingOrders={pendingOrders}
+      feed={feed}
+    />
   );
 };

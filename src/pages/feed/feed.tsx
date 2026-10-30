@@ -3,8 +3,7 @@ import { FeedUI } from '@ui-pages';
 import { useEffect } from 'react';
 
 import { useDispatch, useSelector } from '../../services/store';
-
-import { fetchFeeds, selectFeedsOrders } from '../../services/slices/orderSlice';
+import { fetchFeeds, selectFeedsOrders } from '../../services/slices/feedsSlice';
 
 export const Feed = (): React.JSX.Element => {
   const dispatch = useDispatch();
@@ -18,7 +17,7 @@ export const Feed = (): React.JSX.Element => {
     dispatch(fetchFeeds());
   };
 
-  if (!orders || !orders.length) {
+  if (!orders.length) {
     return <Preloader />;
   }
 

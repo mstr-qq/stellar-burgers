@@ -1,32 +1,49 @@
 import { Preloader, OrderInfoUI } from '@ui';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useSelector } from '../../services/store';
+import { useSelector, useDispatch } from '../../services/store';
 import { selectIngredients } from '../../services/slices/ingredientsSlice';
+import { selectFeedsOrders, selectUserOrders } from '../../services/slices/feedsSlice';
+import {
+  fetchOrderByNumber,
+  selectCurrentOrder,
+  selectCurrentOrderRequest,
+  selectCurrentOrderError,
+  selectOrdersByNumber,
+} from '../../services/slices/orderSlice';
 
-import { getOrderByNumberApi } from '../../utils/burger-api';
-
-import type { TIngredient, TOrder } from '@utils-types';
+import type { TIngredient } from '@utils-types';
 
 export const OrderInfo = (): React.JSX.Element => {
   const { number } = useParams<{ number: string }>();
+  const dispatch = useDispatch();
 
   const ingredients = useSelector(selectIngredients);
+  const feedsOrders = useSelector(selectFeedsOrders);
+  const userOrders = useSelector(selectUserOrders);
+  const ordersByNumber = useSelector(selectOrdersByNumber);
+  const currentOrder = useSelector(selectCurrentOrder);
+  const currentOrderRequest = useSelector(selectCurrentOrderRequest);
+  const currentOrderError = useSelector(selectCurrentOrderError);
 
-  const [orderData, setOrderData] = useState<TOrder | null>(null);
+  const orderNumber = Number(number);
+
+  const orderData = useMemo(() => {
+    if (!Number.isFinite(orderNumber)) return null;
+    return (
+      ordersByNumber[orderNumber] ??
+      feedsOrders.find((o) => o.number === orderNumber) ??
+      userOrders.find((o) => o.number === orderNumber) ??
+      (currentOrder && currentOrder.number === orderNumber ? currentOrder : null)
+    );
+  }, [orderNumber, ordersByNumber, feedsOrders, userOrders, currentOrder]);
 
   useEffect(() => {
-    if (!number) return;
-
-    getOrderByNumberApi(Number(number))
-      .then((res) => {
-        if (res && res.orders && res.orders.length > 0) {
-          setOrderData(res.orders[0]);
-        }
-      })
-      .catch((err) => console.error('Ошибка загрузки данных заказа:', err));
-  }, [number]);
+    if (!Number.isFinite(orderNumber)) return;
+    if (orderData) return;
+    dispatch(fetchOrderByNumber(orderNumber));
+  }, [dispatch, orderNumber, orderData]);
 
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
@@ -38,19 +55,13 @@ export const OrderInfo = (): React.JSX.Element => {
     const ingredientsInfo = orderData.ingredients.reduce(
       (acc: TIngredientsWithCount, item) => {
         if (!acc[item]) {
-          const ingredient = ingredients.find((ing: TIngredient) => ing._id === item);
+          const ingredient = ingredients.find((ing) => ing._id === item);
           if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1,
-            };
+            acc[item] = { ...ingredient, count: 1 };
           }
         } else {
-          if (acc[item]) {
-            acc[item].count++;
-          }
+          acc[item].count++;
         }
-
         return acc;
       },
       {}
@@ -61,16 +72,13 @@ export const OrderInfo = (): React.JSX.Element => {
       0
     );
 
-    return {
-      ...orderData,
-      ingredientsInfo,
-      date,
-      total,
-    };
+    return { ...orderData, ingredientsInfo, date, total };
   }, [orderData, ingredients]);
 
   if (!orderInfo) {
-    return <Preloader />;
+    if (currentOrderError) return <p>{currentOrderError}</p>;
+    if (currentOrderRequest || !ingredients.length) return <Preloader />;
+    return <p>Заказ не найден</p>;
   }
 
   return <OrderInfoUI orderInfo={orderInfo} />;

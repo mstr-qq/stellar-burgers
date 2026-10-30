@@ -25,7 +25,7 @@ import {
   selectIngredientsError,
 } from '../../services/slices/ingredientsSlice';
 
-import { ProtectedRoute } from '.././protected-route/protected-route';
+import { ProtectedRoute } from '../protected-route/protected-route';
 import '../../index.css';
 import styles from './app.module.css';
 
@@ -70,7 +70,6 @@ const App = (): React.JSX.Element => {
   return (
     <div className={styles.app}>
       <AppHeader />
-
       <Routes location={background || location}>
         <Route path="/" element={<ConstructorPage />} />
         <Route path="/feed" element={<Feed />} />
@@ -125,7 +124,24 @@ const App = (): React.JSX.Element => {
           }
         />
 
-        <Route path="/ingredients/:id" element={<IngredientDetails />} />
+        <Route
+          path="/ingredients/:id"
+          element={
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <h2 className='text text_type_main-large mt-10 mb-5'>
+                Детали ингредиента
+              </h2>
+              <IngredientDetails />
+            </div>
+          }
+        />
+
         <Route path="/feed/:number" element={<OrderInfo />} />
         <Route
           path="/profile/orders/:number"
@@ -144,7 +160,7 @@ const App = (): React.JSX.Element => {
           <Route
             path="/feed/:number"
             element={
-              <Modal title="Информация о заказе" onClose={handleModalClose}>
+              <Modal title='Информация о заказе' onClose={handleModalClose}>
                 <OrderInfo />
               </Modal>
             }
@@ -153,7 +169,7 @@ const App = (): React.JSX.Element => {
           <Route
             path="/ingredients/:id"
             element={
-              <Modal title="Детали ингредиента" onClose={handleModalClose}>
+              <Modal title='Детали ингредиента' onClose={handleModalClose}>
                 <IngredientDetails />
               </Modal>
             }
@@ -163,7 +179,7 @@ const App = (): React.JSX.Element => {
             path="/profile/orders/:number"
             element={
               <ProtectedRoute>
-                <Modal title="Информация о заказе" onClose={handleModalClose}>
+                <Modal title='Информация о заказе' onClose={handleModalClose}>
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>
