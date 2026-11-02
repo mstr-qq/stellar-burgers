@@ -1,14 +1,13 @@
 import { LoginUI } from '@ui-pages';
 import { type SyntheticEvent, useState } from 'react';
 
-import { useDispatch, useSelector } from '../../services/store';
-
 import { loginUser, selectUserError } from '../../services/slices/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 export const Login = (): React.JSX.Element => {
   const dispatch = useDispatch();
 
-  const errorText = useSelector(selectUserError) || '';
+  const errorText = useSelector(selectUserError) ?? '';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,7 +16,7 @@ export const Login = (): React.JSX.Element => {
     e.preventDefault();
     if (!email || !password) return;
 
-    dispatch(loginUser({ email, password }));
+    void dispatch(loginUser({ email, password }));
   };
 
   return (

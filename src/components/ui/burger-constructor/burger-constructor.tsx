@@ -6,8 +6,8 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { OrderDetailsUI, Preloader } from '@ui';
 
-import type { TConstructorIngredient } from '@utils-types';
 import type { BurgerConstructorUIProps } from './type';
+import type { TConstructorIngredient } from '@utils-types';
 
 import styles from './burger-constructor.module.css';
 

@@ -1,6 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
 import type { RootState } from '../store';
-import type { TIngredient, TConstructorIngredient, TConstructorState } from '@utils-types';
+import type {
+  TIngredient,
+  TConstructorIngredient,
+  TConstructorState,
+} from '@utils-types';
 
 const initialState: TConstructorState = {
   bun: null,
@@ -12,7 +17,7 @@ const constructorSlice = createSlice({
   initialState,
   reducers: {
     addIngredient: {
-      reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
+      reducer: (state, action: PayloadAction<TConstructorIngredient>): void => {
         if (action.payload.type === 'bun') {
           state.bun = action.payload;
         } else {
@@ -26,29 +31,31 @@ const constructorSlice = createSlice({
         return { payload: { ...ingredient, id } };
       },
     },
-    removeIngredient: (state, action: PayloadAction<string>) => {
+    removeIngredient: (state, action: PayloadAction<string>): void => {
       state.ingredients = state.ingredients.filter((item) => item.id !== action.payload);
     },
     moveIngredient: (
       state,
       action: PayloadAction<{ fromIndex: number; toIndex: number }>
-    ) => {
+    ): void => {
       const { fromIndex, toIndex } = action.payload;
       const upgradedIngredients = [...state.ingredients];
       const [movedItem] = upgradedIngredients.splice(fromIndex, 1);
       upgradedIngredients.splice(toIndex, 0, movedItem);
       state.ingredients = upgradedIngredients;
     },
-    clearConstructor: (state) => {
+    clearConstructor: (state): void => {
       state.bun = null;
       state.ingredients = [];
     },
   },
 });
 
-export const selectConstructorBun = (state: RootState) => state.burgerConstructor.bun;
-export const selectConstructorIngredients = (state: RootState) =>
-  state.burgerConstructor.ingredients;
+export const selectConstructorBun = (state: RootState): TConstructorIngredient | null =>
+  state.burgerConstructor.bun;
+export const selectConstructorIngredients = (
+  state: RootState
+): TConstructorIngredient[] => state.burgerConstructor.ingredients;
 
 export const { addIngredient, removeIngredient, moveIngredient, clearConstructor } =
   constructorSlice.actions;

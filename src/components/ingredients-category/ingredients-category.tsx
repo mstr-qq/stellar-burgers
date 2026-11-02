@@ -1,11 +1,11 @@
 import { IngredientsCategoryUI } from '@ui';
 import { useMemo } from 'react';
-import { useSelector } from '../../services/store';
 
 import {
   selectConstructorBun,
   selectConstructorIngredients,
 } from '../../services/slices/constructorSlice';
+import { useSelector } from '../../services/store';
 
 import type { TIngredientsCategoryProps } from './type';
 import type { TConstructorState, TIngredient } from '@utils-types';

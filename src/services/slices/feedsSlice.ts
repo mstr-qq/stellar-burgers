@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+
 import { getFeedsApi, getOrdersApi } from '../../utils/burger-api';
+
 import type { RootState } from '../store';
 import type { TOrder, TOrdersData, TFeedState } from '@utils-types';
 
-interface FeedsState {
+type FeedsState = {
   feeds: TFeedState;
   userOrders: TOrder[];
   userOrdersLoading: boolean;
   userOrdersError: string | null;
-}
+};
 
 const initialState: FeedsState = {
   feeds: {
@@ -23,37 +25,35 @@ const initialState: FeedsState = {
   userOrdersError: null,
 };
 
-export const fetchFeeds = createAsyncThunk<
-  TOrdersData,
-  void,
-  { rejectValue: string }
->('feeds/fetchFeeds', async (_, { rejectWithValue }) => {
-  try {
-    const data = await getFeedsApi();
-    return {
-      orders: data.orders,
-      total: data.total,
-      totalToday: data.totalToday,
-    };
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Ошибка загрузки ленты';
-    return rejectWithValue(message);
+export const fetchFeeds = createAsyncThunk<TOrdersData, void, { rejectValue: string }>(
+  'feeds/fetchFeeds',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getFeedsApi();
+      return {
+        orders: data.orders,
+        total: data.total,
+        totalToday: data.totalToday,
+      };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Ошибка загрузки ленты';
+      return rejectWithValue(message);
+    }
   }
-});
+);
 
-export const fetchUserOrders = createAsyncThunk<
-  TOrder[],
-  void,
-  { rejectValue: string }
->('feeds/fetchUserOrders', async (_, { rejectWithValue }) => {
-  try {
-    return await getOrdersApi();
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : 'Ошибка загрузки истории заказов';
-    return rejectWithValue(message);
+export const fetchUserOrders = createAsyncThunk<TOrder[], void, { rejectValue: string }>(
+  'feeds/fetchUserOrders',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getOrdersApi();
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Ошибка загрузки истории заказов';
+      return rejectWithValue(message);
+    }
   }
-});
+);
 
 const feedsSlice = createSlice({
   name: 'feeds',
@@ -91,14 +91,19 @@ const feedsSlice = createSlice({
   },
 });
 
-export const selectFeeds = (state: RootState) => state.feeds.feeds;
-export const selectFeedsOrders = (state: RootState) => state.feeds.feeds.orders;
-export const selectFeedsTotal = (state: RootState) => state.feeds.feeds.total;
-export const selectFeedsTotalToday = (state: RootState) => state.feeds.feeds.totalToday;
-export const selectFeedsLoading = (state: RootState) => state.feeds.feeds.isLoading;
-export const selectFeedsError = (state: RootState) => state.feeds.feeds.error;
-export const selectUserOrders = (state: RootState) => state.feeds.userOrders;
-export const selectUserOrdersLoading = (state: RootState) => state.feeds.userOrdersLoading;
-export const selectUserOrdersError = (state: RootState) => state.feeds.userOrdersError;
+export const selectFeeds = (state: RootState): TFeedState => state.feeds.feeds;
+export const selectFeedsOrders = (state: RootState): TOrder[] =>
+  state.feeds.feeds.orders;
+export const selectFeedsTotal = (state: RootState): number => state.feeds.feeds.total;
+export const selectFeedsTotalToday = (state: RootState): number =>
+  state.feeds.feeds.totalToday;
+export const selectFeedsLoading = (state: RootState): boolean =>
+  state.feeds.feeds.isLoading;
+export const selectFeedsError = (state: RootState): unknown => state.feeds.feeds.error;
+export const selectUserOrders = (state: RootState): TOrder[] => state.feeds.userOrders;
+export const selectUserOrdersLoading = (state: RootState): boolean =>
+  state.feeds.userOrdersLoading;
+export const selectUserOrdersError = (state: RootState): string | null =>
+  state.feeds.userOrdersError;
 
 export default feedsSlice.reducer;

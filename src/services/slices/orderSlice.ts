@@ -1,9 +1,11 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+
 import { orderBurgerApi, getOrderByNumberApi } from '../../utils/burger-api';
+
 import type { RootState } from '../store';
 import type { TOrder } from '@utils-types';
 
-interface OrderState {
+type OrderState = {
   orderRequest: boolean;
   orderModalData: TOrder | null;
   orderError: string | null;
@@ -11,7 +13,7 @@ interface OrderState {
   currentOrderRequest: boolean;
   currentOrderError: string | null;
   ordersByNumber: Record<number, TOrder>;
-}
+};
 
 const initialState: OrderState = {
   orderRequest: false,
@@ -23,23 +25,20 @@ const initialState: OrderState = {
   ordersByNumber: {},
 };
 
-export const createOrder = createAsyncThunk<
-  TOrder,
-  string[],
-  { rejectValue: string }
->('order/createOrder', async (ingredientIds, { rejectWithValue }) => {
-  try {
-    const data = await orderBurgerApi(ingredientIds);
-    if (data.success) {
-      return data.order;
+export const createOrder = createAsyncThunk<TOrder, string[], { rejectValue: string }>(
+  'order/createOrder',
+  async (ingredientIds, { rejectWithValue }) => {
+    try {
+      const data = await orderBurgerApi(ingredientIds);
+      if (data.success) return data.order;
+      return rejectWithValue('Не удалось оформить заказ');
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Ошибка при отправке заказа';
+      return rejectWithValue(message);
     }
-    return rejectWithValue('Не удалось оформить заказ');
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : 'Ошибка при отправке заказа';
-    return rejectWithValue(message);
   }
-});
+);
 
 export const fetchOrderByNumber = createAsyncThunk<
   TOrder,
@@ -48,13 +47,10 @@ export const fetchOrderByNumber = createAsyncThunk<
 >('order/fetchOrderByNumber', async (number, { rejectWithValue }) => {
   try {
     const res = await getOrderByNumberApi(number);
-    if (res.success && res.orders.length > 0) {
-      return res.orders[0];
-    }
+    if (res.success && res.orders.length > 0) return res.orders[0];
     return rejectWithValue('Заказ не найден');
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : 'Ошибка загрузки заказа';
+    const message = error instanceof Error ? error.message : 'Ошибка загрузки заказа';
     return rejectWithValue(message);
   }
 });
@@ -63,7 +59,7 @@ const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    resetOrder: (state) => {
+    resetOrder: (state): void => {
       state.orderModalData = null;
       state.orderRequest = false;
       state.orderError = null;
@@ -89,14 +85,11 @@ const orderSlice = createSlice({
         state.currentOrderRequest = true;
         state.currentOrderError = null;
       })
-      .addCase(
-        fetchOrderByNumber.fulfilled,
-        (state, action: PayloadAction<TOrder>) => {
-          state.currentOrderRequest = false;
-          state.currentOrder = action.payload;
-          state.ordersByNumber[action.payload.number] = action.payload;
-        }
-      )
+      .addCase(fetchOrderByNumber.fulfilled, (state, action: PayloadAction<TOrder>) => {
+        state.currentOrderRequest = false;
+        state.currentOrder = action.payload;
+        state.ordersByNumber[action.payload.number] = action.payload;
+      })
       .addCase(fetchOrderByNumber.rejected, (state, action) => {
         state.currentOrderRequest = false;
         state.currentOrderError = action.payload ?? 'Ошибка загрузки заказа';
@@ -104,15 +97,20 @@ const orderSlice = createSlice({
   },
 });
 
-export const selectOrderRequest = (state: RootState) => state.order.orderRequest;
-export const selectOrderModalData = (state: RootState) => state.order.orderModalData;
-export const selectOrderError = (state: RootState) => state.order.orderError;
-export const selectCurrentOrder = (state: RootState) => state.order.currentOrder;
-export const selectCurrentOrderRequest = (state: RootState) =>
+export const selectOrderRequest = (state: RootState): boolean =>
+  state.order.orderRequest;
+export const selectOrderModalData = (state: RootState): TOrder | null =>
+  state.order.orderModalData;
+export const selectOrderError = (state: RootState): string | null =>
+  state.order.orderError;
+export const selectCurrentOrder = (state: RootState): TOrder | null =>
+  state.order.currentOrder;
+export const selectCurrentOrderRequest = (state: RootState): boolean =>
   state.order.currentOrderRequest;
-export const selectCurrentOrderError = (state: RootState) =>
+export const selectCurrentOrderError = (state: RootState): string | null =>
   state.order.currentOrderError;
-export const selectOrdersByNumber = (state: RootState) => state.order.ordersByNumber;
+export const selectOrdersByNumber = (state: RootState): Record<number, TOrder> =>
+  state.order.ordersByNumber;
 
 export const { resetOrder } = orderSlice.actions;
 export default orderSlice.reducer;

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+
 import {
   loginUserApi,
   registerUserApi,
@@ -8,18 +9,19 @@ import {
   type TLoginData,
   type TRegisterData,
 } from '../../utils/burger-api';
-import type { RootState } from '../store';
-import type { TUser } from '@utils-types';
 import { setCookie, deleteCookie } from '../../utils/cookie';
 
-interface UserState {
+import type { RootState } from '../store';
+import type { TUser } from '@utils-types';
+
+type UserState = {
   isAuthChecked: boolean;
   data: TUser | null;
   error: string | null;
   loading: boolean;
   updateUserRequest: boolean;
   updateUserError: string | null;
-}
+};
 
 const initialState: UserState = {
   isAuthChecked: false,
@@ -105,13 +107,10 @@ export const updateUser = createAsyncThunk<
 >('user/updateUser', async (data, { rejectWithValue }) => {
   try {
     const res = await updateUserApi(data);
-    if (res.success) {
-      return res.user;
-    }
+    if (res.success) return res.user;
     return rejectWithValue('Ошибка обновления профиля');
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : 'Ошибка обновления профиля';
+    const message = error instanceof Error ? error.message : 'Ошибка обновления профиля';
     return rejectWithValue(message);
   }
 });
@@ -120,10 +119,10 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    clearUserError: (state) => {
+    clearUserError: (state): void => {
       state.error = null;
     },
-    clearUpdateUserError: (state) => {
+    clearUpdateUserError: (state): void => {
       state.updateUserError = null;
     },
   },
@@ -148,7 +147,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Ошибка входа';
+        state.error = action.payload ?? 'Ошибка входа';
       })
 
       .addCase(registerUser.pending, (state) => {
@@ -161,7 +160,7 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Ошибка регистрации';
+        state.error = action.payload ?? 'Ошибка регистрации';
       })
 
       .addCase(logoutUser.fulfilled, (state) => {
@@ -183,12 +182,15 @@ const userSlice = createSlice({
   },
 });
 
-export const selectUserData = (state: RootState) => state.user.data;
-export const selectIsAuthChecked = (state: RootState) => state.user.isAuthChecked;
-export const selectUserError = (state: RootState) => state.user.error;
-export const selectUserLoading = (state: RootState) => state.user.loading;
-export const selectUpdateUserRequest = (state: RootState) => state.user.updateUserRequest;
-export const selectUpdateUserError = (state: RootState) => state.user.updateUserError;
+export const selectUserData = (state: RootState): TUser | null => state.user.data;
+export const selectIsAuthChecked = (state: RootState): boolean =>
+  state.user.isAuthChecked;
+export const selectUserError = (state: RootState): string | null => state.user.error;
+export const selectUserLoading = (state: RootState): boolean => state.user.loading;
+export const selectUpdateUserRequest = (state: RootState): boolean =>
+  state.user.updateUserRequest;
+export const selectUpdateUserError = (state: RootState): string | null =>
+  state.user.updateUserError;
 
 export const { clearUserError, clearUpdateUserError } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,12 +1,13 @@
-import { NavLink } from 'react-router-dom';
 import {
   BurgerIcon,
   ListIcon,
-  ProfileIcon,
   Logo,
+  ProfileIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { NavLink } from 'react-router-dom';
 
 import type { TAppHeaderUIProps } from './type';
+
 import styles from './app-header.module.css';
 
 export const AppHeaderUI = ({ userName }: TAppHeaderUIProps): React.JSX.Element => (
@@ -59,7 +60,7 @@ export const AppHeaderUI = ({ userName }: TAppHeaderUIProps): React.JSX.Element 
             <>
               <ProfileIcon type={isActive ? 'primary' : 'secondary'} />
               <p className="text text_type_main-default ml-2">
-                {userName || 'Личный кабинет'}
+                {userName ?? 'Личный кабинет'}
               </p>
             </>
           )}

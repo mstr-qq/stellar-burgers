@@ -1,10 +1,11 @@
 import { FeedInfoUI } from '@ui';
-import { useSelector } from '../../services/store';
+
 import {
   selectFeedsOrders,
   selectFeedsTotal,
   selectFeedsTotalToday,
 } from '../../services/slices/feedsSlice';
+import { useSelector } from '../../services/store';
 
 import type { TFeedState, TOrder } from '@utils-types';
 
@@ -31,10 +32,6 @@ export const FeedInfo = (): React.JSX.Element => {
   const pendingOrders = getOrders(ordersFromStore, 'pending');
 
   return (
-    <FeedInfoUI
-      readyOrders={readyOrders}
-      pendingOrders={pendingOrders}
-      feed={feed}
-    />
+    <FeedInfoUI readyOrders={readyOrders} pendingOrders={pendingOrders} feed={feed} />
   );
 };

@@ -1,7 +1,7 @@
 import { BurgerConstructorUI } from '@ui';
 import { useMemo } from 'react';
-import { useDispatch, useSelector } from '../../services/store';
 import { useNavigate, useLocation } from 'react-router-dom';
+
 import {
   selectConstructorBun,
   selectConstructorIngredients,
@@ -14,6 +14,7 @@ import {
   resetOrder,
 } from '../../services/slices/orderSlice';
 import { selectUserData } from '../../services/slices/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 import type { TConstructorIngredient, TConstructorState } from '@utils-types';
 
@@ -35,7 +36,7 @@ export const BurgerConstructor = (): React.JSX.Element | null => {
     if (!constructorItems.bun || orderRequest) return;
 
     if (!user) {
-      navigate('/login', { state: { from: location } });
+      void navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -48,13 +49,15 @@ export const BurgerConstructor = (): React.JSX.Element | null => {
     dispatch(createOrder(orderDataIds))
       .unwrap()
       .then(() => {
-        dispatch(clearConstructor());
+        void dispatch(clearConstructor());
       })
-      .catch((err) => console.error('Ошибка оформления заказа:', err));
+      .catch((err: unknown) => {
+        console.error('Ошибка оформления заказа:', err);
+      });
   };
 
   const closeOrderModal = (): void => {
-    dispatch(resetOrder());
+    void dispatch(resetOrder());
   };
 
   const price = useMemo(

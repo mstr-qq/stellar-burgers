@@ -1,11 +1,12 @@
 import { ProfileUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from '../../services/store';
+
 import {
   selectUserData,
   selectUpdateUserError,
   updateUser,
 } from '../../services/slices/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 export const Profile = (): React.JSX.Element => {
   const dispatch = useDispatch();
@@ -13,9 +14,9 @@ export const Profile = (): React.JSX.Element => {
   const updateUserError = useSelector(selectUpdateUserError) ?? undefined;
 
   const [formValue, setFormValue] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    password: '••••••',
+    name: user?.name ?? '',
+    email: user?.email ?? '',
+    password: '',
   });
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export const Profile = (): React.JSX.Element => {
       setFormValue({
         name: user.name,
         email: user.email,
-        password: '••••••',
+        password: '',
       });
     }
   }, [user]);
@@ -31,18 +32,18 @@ export const Profile = (): React.JSX.Element => {
   const isFormChanged = user
     ? formValue.name !== user.name ||
       formValue.email !== user.email ||
-      (formValue.password !== '••••••' && formValue.password !== '')
+      formValue.password !== ''
     : false;
 
   const handleSubmit = (e: SyntheticEvent): void => {
     e.preventDefault();
     if (!isFormChanged) return;
 
-    dispatch(
+    void dispatch(
       updateUser({
         name: formValue.name,
         email: formValue.email,
-        password: formValue.password !== '••••••' ? formValue.password : undefined,
+        ...(formValue.password ? { password: formValue.password } : {}),
       })
     );
   };
@@ -53,7 +54,7 @@ export const Profile = (): React.JSX.Element => {
       setFormValue({
         name: user.name,
         email: user.email,
-        password: '••••••',
+        password: '',
       });
     }
   };

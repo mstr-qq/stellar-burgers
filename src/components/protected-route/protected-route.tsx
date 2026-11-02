@@ -1,8 +1,14 @@
-import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from '../../services/store';
+
 import { selectIsAuthChecked, selectUserData } from '../../services/slices/userSlice';
+import { useSelector } from '../../services/store';
 import { Preloader } from '../ui';
+
+import type React from 'react';
+
+type TLocationState = {
+  from?: { pathname: string };
+};
 
 type ProtectedRouteProps = {
   anonymous?: boolean;
@@ -22,12 +28,13 @@ export const ProtectedRoute = ({
   }
 
   if (anonymous && user) {
-    const from = location.state?.from || { pathname: '/' };
+    const state = location.state as TLocationState | null;
+    const from = state?.from ?? { pathname: '/' };
     return <Navigate to={from} />;
   }
 
   if (!anonymous && !user) {
-    return <Navigate to='/login' state={{ from: location }} />;
+    return <Navigate to="/login" state={{ from: location }} />;
   }
 
   return children;

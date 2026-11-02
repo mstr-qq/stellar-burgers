@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { AppHeader, Modal, IngredientDetails, OrderInfo } from '@components';
+import { AppHeader, IngredientDetails, Modal, OrderInfo, OrderModal } from '@components';
 import {
   ConstructorPage,
   Feed,
@@ -12,11 +11,8 @@ import {
   NotFound404,
 } from '@pages';
 import { Preloader } from '@ui';
-
+import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-
-import { useDispatch, useSelector } from '../../services/store';
-import { checkUserAuth } from '../../services/slices/userSlice';
 
 import {
   fetchIngredients,
@@ -24,29 +20,36 @@ import {
   selectIngredientsLoading,
   selectIngredientsError,
 } from '../../services/slices/ingredientsSlice';
-
+import { checkUserAuth } from '../../services/slices/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
 import { ProtectedRoute } from '../protected-route/protected-route';
+
 import '../../index.css';
+
 import styles from './app.module.css';
+
+type TBackgroundState = {
+  background?: { pathname: string };
+};
 
 const App = (): React.JSX.Element => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const background = location.state?.background;
+  const background = (location.state as TBackgroundState | null)?.background;
 
   const ingredients = useSelector(selectIngredients);
   const isIngredientsLoading = useSelector(selectIngredientsLoading);
   const ingredientsError = useSelector(selectIngredientsError);
 
   useEffect(() => {
-    dispatch(fetchIngredients());
-    dispatch(checkUserAuth());
+    void dispatch(fetchIngredients());
+    void dispatch(checkUserAuth());
   }, [dispatch]);
 
-  const handleModalClose = () => {
-    navigate(-1);
+  const handleModalClose = (): void => {
+    void navigate(-1);
   };
 
   if (isIngredientsLoading) {
@@ -70,7 +73,8 @@ const App = (): React.JSX.Element => {
   return (
     <div className={styles.app}>
       <AppHeader />
-      <Routes location={background || location}>
+
+      <Routes location={background ?? location}>
         <Route path="/" element={<ConstructorPage />} />
         <Route path="/feed" element={<Feed />} />
 
@@ -134,14 +138,13 @@ const App = (): React.JSX.Element => {
                 alignItems: 'center',
               }}
             >
-              <h2 className='text text_type_main-large mt-10 mb-5'>
+              <h2 className="text text_type_main-large mt-10 mb-5">
                 Детали ингредиента
               </h2>
               <IngredientDetails />
             </div>
           }
         />
-
         <Route path="/feed/:number" element={<OrderInfo />} />
         <Route
           path="/profile/orders/:number"
@@ -159,17 +162,13 @@ const App = (): React.JSX.Element => {
         <Routes>
           <Route
             path="/feed/:number"
-            element={
-              <Modal title='Информация о заказе' onClose={handleModalClose}>
-                <OrderInfo />
-              </Modal>
-            }
+            element={<OrderModal onClose={handleModalClose} />}
           />
 
           <Route
             path="/ingredients/:id"
             element={
-              <Modal title='Детали ингредиента' onClose={handleModalClose}>
+              <Modal title="Детали ингредиента" onClose={handleModalClose}>
                 <IngredientDetails />
               </Modal>
             }
@@ -179,9 +178,7 @@ const App = (): React.JSX.Element => {
             path="/profile/orders/:number"
             element={
               <ProtectedRoute>
-                <Modal title='Информация о заказе' onClose={handleModalClose}>
-                  <OrderInfo />
-                </Modal>
+                <OrderModal onClose={handleModalClose} />
               </ProtectedRoute>
             }
           />

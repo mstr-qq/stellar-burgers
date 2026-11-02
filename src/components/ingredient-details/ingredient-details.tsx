@@ -1,8 +1,10 @@
-import type { FC } from 'react';
-import { useParams } from 'react-router-dom';
 import { Preloader, IngredientDetailsUI } from '@ui';
-import { useSelector } from '../../services/store';
+import { useParams } from 'react-router-dom';
+
 import { selectIngredients } from '../../services/slices/ingredientsSlice';
+import { useSelector } from '../../services/store';
+
+import type { FC } from 'react';
 
 export const IngredientDetails: FC = () => {
   const { id } = useParams<{ id: string }>();

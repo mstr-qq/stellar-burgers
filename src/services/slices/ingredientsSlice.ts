@@ -1,13 +1,15 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+
 import { getIngredientsApi } from '../../utils/burger-api';
+
 import type { RootState } from '../store';
 import type { TIngredient } from '@utils-types';
 
-interface IngredientsState {
+type IngredientsState = {
   items: TIngredient[];
   loading: boolean;
   error: string | null;
-}
+};
 
 const initialState: IngredientsState = {
   items: [],
@@ -33,7 +35,7 @@ const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {
-    clearIngredients: (state) => {
+    clearIngredients: (state): void => {
       state.items = [];
       state.error = null;
     },
@@ -44,20 +46,26 @@ const ingredientsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchIngredients.fulfilled, (state, action: PayloadAction<TIngredient[]>) => {
-        state.loading = false;
-        state.items = action.payload;
-      })
+      .addCase(
+        fetchIngredients.fulfilled,
+        (state, action: PayloadAction<TIngredient[]>) => {
+          state.loading = false;
+          state.items = action.payload;
+        }
+      )
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Что-то пошло не так';
+        state.error = action.payload ?? 'Что-то пошло не так';
       });
   },
 });
 
-export const selectIngredients = (state: RootState) => state.ingredients.items;
-export const selectIngredientsLoading = (state: RootState) => state.ingredients.loading;
-export const selectIngredientsError = (state: RootState) => state.ingredients.error;
+export const selectIngredients = (state: RootState): TIngredient[] =>
+  state.ingredients.items;
+export const selectIngredientsLoading = (state: RootState): boolean =>
+  state.ingredients.loading;
+export const selectIngredientsError = (state: RootState): string | null =>
+  state.ingredients.error;
 
 export const { clearIngredients } = ingredientsSlice.actions;
 export default ingredientsSlice.reducer;

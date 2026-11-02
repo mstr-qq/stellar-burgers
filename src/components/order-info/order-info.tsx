@@ -2,9 +2,8 @@ import { Preloader, OrderInfoUI } from '@ui';
 import { useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useSelector, useDispatch } from '../../services/store';
-import { selectIngredients } from '../../services/slices/ingredientsSlice';
 import { selectFeedsOrders, selectUserOrders } from '../../services/slices/feedsSlice';
+import { selectIngredients } from '../../services/slices/ingredientsSlice';
 import {
   fetchOrderByNumber,
   selectCurrentOrder,
@@ -12,6 +11,7 @@ import {
   selectCurrentOrderError,
   selectOrdersByNumber,
 } from '../../services/slices/orderSlice';
+import { useSelector, useDispatch } from '../../services/store';
 
 import type { TIngredient } from '@utils-types';
 
@@ -42,7 +42,7 @@ export const OrderInfo = (): React.JSX.Element => {
   useEffect(() => {
     if (!Number.isFinite(orderNumber)) return;
     if (orderData) return;
-    dispatch(fetchOrderByNumber(orderNumber));
+    void dispatch(fetchOrderByNumber(orderNumber));
   }, [dispatch, orderNumber, orderData]);
 
   const orderInfo = useMemo(() => {
