@@ -1,24 +1,46 @@
-import constructorReducer, {
-  addIngredient, removeIngredient, moveIngredient, clearConstructor,
-} from '../constructorSlice';
 import type { TIngredient } from '@utils-types';
+import constructorReducer, {
+  addIngredient,
+  clearConstructor,
+  moveIngredient,
+  removeIngredient,
+} from '../constructorSlice';
 
 const bun: TIngredient = {
-  _id: 'bun-1', name: 'Булка', type: 'bun', proteins: 1, fat: 1,
-  carbohydrates: 1, calories: 100, price: 100,
-  image: 'img', image_mobile: 'img', image_large: 'img',
+  _id: 'bun-1',
+  name: 'Булка',
+  type: 'bun',
+  proteins: 1,
+  fat: 1,
+  carbohydrates: 1,
+  calories: 100,
+  price: 100,
+  image: 'img',
+  image_mobile: 'img',
+  image_large: 'img',
 };
+
 const main: TIngredient = {
-  _id: 'main-1', name: 'Котлета', type: 'main', proteins: 2, fat: 2,
-  carbohydrates: 2, calories: 200, price: 200,
-  image: 'img', image_mobile: 'img', image_large: 'img',
+  _id: 'main-1',
+  name: 'Котлета',
+  type: 'main',
+  proteins: 2,
+  fat: 2,
+  carbohydrates: 2,
+  calories: 200,
+  price: 200,
+  image: 'img',
+  image_mobile: 'img',
+  image_large: 'img',
 };
 
 const initialState = { bun: null, ingredients: [] };
 
 describe('burgerConstructor reducer', () => {
   it('возвращает начальное состояние при неизвестном экшене', () => {
-    expect(constructorReducer(undefined, { type: 'UNKNOWN' })).toEqual(initialState);
+    expect(constructorReducer(undefined, { type: 'UNKNOWN' })).toEqual(
+      initialState
+    );
   });
 
   it('addIngredient — добавление булки в отдельное поле bun', () => {
@@ -44,12 +66,18 @@ describe('burgerConstructor reducer', () => {
 
   it('moveIngredient — меняет порядок элементов', () => {
     let state = constructorReducer(initialState, addIngredient(main));
-    state = constructorReducer(state, addIngredient({ ...main, _id: 'main-2' }));
-    const beforeIds = state.ingredients.map(i => i._id);
-    
-    state = constructorReducer(state, moveIngredient({ fromIndex: 0, toIndex: 1 }));
-    
-    const afterIds = state.ingredients.map(i => i._id);
+    state = constructorReducer(
+      state,
+      addIngredient({ ...main, _id: 'main-2' })
+    );
+    const beforeIds = state.ingredients.map((i) => i._id);
+
+    state = constructorReducer(
+      state,
+      moveIngredient({ fromIndex: 0, toIndex: 1 })
+    );
+
+    const afterIds = state.ingredients.map((i) => i._id);
     expect(afterIds).toEqual([beforeIds[1], beforeIds[0]]);
   });
 
